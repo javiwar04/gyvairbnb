@@ -1,9 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export', // 🔥 importante para Azure Static Web Apps
-  images: {
-    unoptimized: true, // evita errores con el sistema de imágenes de Next
-  },
-};
+  output: 'export', // 👈 nuevo método para generar sitio estático
+}
 
-export default nextConfig;
+export default nextConfig
