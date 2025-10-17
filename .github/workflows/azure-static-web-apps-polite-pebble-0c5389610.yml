@@ -8,49 +8,30 @@ on:
     types: [opened, synchronize, reopened, closed]
     branches:
       - main
-  workflow_dispatch:  # 👈 permite ejecutarlo manualmente desde GitHub Actions
 
 jobs:
   build_and_deploy_job:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Build and Deploy Job
-
     steps:
-      # 1️⃣ Clona el repositorio
       - uses: actions/checkout@v3
 
-      # 2️⃣ Instala dependencias (usa --legacy-peer-deps para evitar conflictos con React 19)
+      # Instalar dependencias (permite conflictos de peer-deps)
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
-      # 3️⃣ Compila y exporta la app Next.js a carpeta estática (out/)
-      - name: Build and export Next.js app
-        run: |
-          npm run build
-          npm run export
+      # Compilar sitio Next.js (usa output: 'export' definido en next.config.mjs)
+      - name: Build Next.js app
+        run: npm run build
 
-      # 4️⃣ Despliega el contenido de la carpeta "out" a Azure Static Web Apps
+      # Desplegar la app estática generada (carpeta "out")
       - name: Deploy prebuilt Next.js app
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_POLITE_PEBBLE_0C5389610 }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}  # requerido para comentarios en PRs
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_ICY_PEBBLE_053F60F10 }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "out"        # ruta donde Next.js exporta los archivos
-          skip_app_build: true       # evita que Azure/Oryx intente reconstruir
-          skip_api_build: true       # no tienes backend separado
-
-  # 🔒 Cierra los despliegues de PR si el pull request se cierra
-  close_pull_request_job:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    runs-on: ubuntu-latest
-    name: Close Pull Request Job
-
-    steps:
-      - name: Close Pull Request
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_POLITE_PEBBLE_0C5389610 }}
-          action: "close"
-
+          app_location: "out"       # Carpeta generada tras 'npm run build'
+          skip_app_build: true
+          skip_api_build: true
