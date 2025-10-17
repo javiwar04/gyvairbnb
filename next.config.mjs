@@ -1,11 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+  output: 'export', // 🔥 importante para Azure Static Web Apps
   images: {
-    unoptimized: true,
+    unoptimized: true, // evita errores con el sistema de imágenes de Next
   },
-}
+};
 
-export default nextConfig
+export default nextConfig;
